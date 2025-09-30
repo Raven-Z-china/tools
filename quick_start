@@ -1,0 +1,32 @@
+#>>> 快速进入模块 >>>
+# 环境变量名设置
+IFS=$'\n' read -d '' -r -a env_list <<< "$(conda env list | grep '^[^#]' | awk '{print $1}')"
+for i in ${!env_list[@]}; do
+        echo "$i：${env_list[i]}"
+done
+echo "输入序号选择进入的环境：(回车退出)"
+read idx
+if [ -n "$idx" ]; then
+        env=${env_list[idx]}
+fi
+echo ""
+path=$(pwd)
+while true; do
+        file_list=($(find . -mindepth 1 -maxdepth 1 -type d -name '[a-zA-Z]*' -exec basename {} \;))
+        for i in ${!file_list[@]}; do
+                echo -n "$i：${file_list[i]}    "
+        done
+        echo ""
+        echo ""
+        echo "输入序号选择进入的文件夹：(回车退出)"
+        read name
+        if [ -z "$name" ]; then
+                break
+        else
+                path="$path/${file_list[name]}"
+        fi
+        cd "$path"
+done
+conda activate $env
+cd $path
+#<<< 快速进入模块 <<<
